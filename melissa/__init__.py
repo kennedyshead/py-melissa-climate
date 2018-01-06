@@ -36,7 +36,8 @@ class Melissa(object):
         self.access_token = kwargs.get('access_token', None)
         self.refresh_token = kwargs.get('refresh_token', None)
         self.token_type = kwargs.get('token_type', None)
-        self.devices = []
+        self.devices = {}
+        self.geofences = {}
         if not self.have_connection():
             self._connect()
 
@@ -70,14 +71,26 @@ class Melissa(object):
         return headers
 
     def fetch_devices(self):
+        url = MELISSA_URL % 'controllers'
+        logger.info(url)
+        headers = self._get_headers()
+        req = requests.get(url, headers=headers)
+        if req.status_code == requests.codes.ok:
+            resp = json.loads(req.text)
+            for controller in resp['_embedded']['controller']:
+                self.devices[controller['serial_number']] = controller
+        logger.debug(self.devices)
+        return self.devices
+
+    def fetch_geofences(self):
         url = MELISSA_URL % 'geofences'
         logger.info(url)
         headers = self._get_headers()
         req = requests.get(url, headers=headers)
         if req.status_code == requests.codes.ok:
             resp = json.loads(req.text)
-            for controller in resp['_embedded']['geofence']:
-                self.devices.append(controller['controller_id'])
+            for geofence in resp['_embedded']['geofence']:
+                self.geofences[geofence['controller_id']] = geofence
         logger.debug(self.devices)
         return self.devices
 
@@ -89,7 +102,7 @@ class Melissa(object):
         logger.info(url)
         headers = self._get_headers()
         ret = {}
-        for device in self.devices:
+        for device in self.devices.keys():
             input_data = json.dumps({'serial_number': device})
             print(input_data)
             headers.update({'Content-Type': 'application/json'})
