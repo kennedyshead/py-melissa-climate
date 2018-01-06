@@ -16,9 +16,9 @@ CLIENT_DATA = {
     'client_secret': 'mclimate_core'
 }
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; SM-G935F Build/NRD90M; wv) '
-                  'AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 '
-                  'Chrome/63.0.3239.111 Mobile Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 7.0; SM-G935F Build/NRD90M; wv)'
+                  ' AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0'
+                  ' Chrome/63.0.3239.111 Mobile Safari/537.36',
     'Connection': 'keep-alive',
     'Pragma': 'no-cache',
     'Cache-Control': 'no-cache',

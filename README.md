@@ -1,80 +1,47 @@
-# Project Title
+# Python binds for Melissa Climate
 
-One Paragraph of project description goes here
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+This is an unofficial wrapper for melissa web api: http://seemelissa.com/en
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
-
 ```
-Give the example
+pip install requests
 ```
 
-And repeat
-
 ```
-until finished
+python
+>>> from melissa import Melissa
+>>> m = Melissa(username="email_adress", password="password")
+>>> m.fetch_devices()
+{'********': {'user_id': 4989, 'serial_number': '********', 'mac': '********', 'firmware_version': 'V1SHTHF', 'name': 'Melissa ********', 'type': 'melissa', 'room_id': None, 'created': '2016-07-06 18:59:46', 'id': 5351, 'online': True, 'brand_id': 1, 'controller_log': {'temp': 25.4, 'created': '2018-01-06T10:12:16.249Z', 'raw_temperature': 28188, 'humidity': 18.5, 'raw_humidity': 12862}, '_links': {'self': {'href': '/v1/controllers'}}}}
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+WIP
 
 ### And coding style tests
 
-Explain what these tests test and why
+We use flake8
 
 ```
-Give an example
+pip install flake8
 ```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
+```
+flake8 melissa
+```
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+* [requests](http://docs.python-requests.org/en/master/)
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kennedyshead/py-melissa-climate/tags). 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Magnus Knutas** - *Initial work* - [kennedyshead](https://github.com/kennedyshead)
 
 ## License
 
@@ -82,6 +49,5 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Acknowledgments
 
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
+* Melissa dev team who made a great API
+* Home-assistant.io for the inspiration to write this
