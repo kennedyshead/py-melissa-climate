@@ -31,7 +31,7 @@ setup(
     long_description=long_description,
     url='https://github.com/kennedyshead/py-melissa-climate',
     download_url=
-    'https://github.com/kennedyshead/py-melissa-climate/archive/0.2.0.tar.gz',
+    'https://github.com/kennedyshead/py-melissa-climate/archive/0.3.0.tar.gz',
     author='Magnus Knutas',  # Optional
     author_email='magnusknutas@gmail.com',  # Optional
 
