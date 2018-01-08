@@ -26,7 +26,7 @@ __author__ = 'Magnus Knutas'
 
 setup(
     name='py-melissa-climate',
-    version='0.2.0',
+    version='0.3.0',
     description='Api wrapper for Melissa Climate http://seemelissa.com',
     long_description=long_description,
     url='https://github.com/kennedyshead/py-melissa-climate',

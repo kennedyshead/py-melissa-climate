@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+
 import requests
 
 from melissa.exceptions import ApiException
@@ -28,11 +29,43 @@ HEADERS = {
     'X-Requested-With': 'at.cloudfaces.melissa'
 }
 
+SERIAL_NUMBER = 'serial_number'
+COMMAND = 'command'
+STATE = 'state'
+MODE = 'mode'
+TEMP = 'temp'
+FAN = 'fan'
+
+FAN_AUTO = 0
+FAN_LOW = 1
+FAN_MEDIUM = 2
+FAN_HIGH = 3
+
+STATE_OFF = 0
+STATE_ON = 1
+STATE_IDLE = 2
+
+MODE_AUTO = 0
+MODE_FAN = 1
+MODE_HEAT = 2
+MODE_COOL = 3
+MODE_DRY = 4
+
+DEFAULT_DATA = {
+  SERIAL_NUMBER: "",
+  COMMAND: "send_ir_code",
+  STATE: STATE_ON,  # 0-OFF; 1-ON; 2-Idle
+  MODE: MODE_HEAT,  # 0-Auto; 1-Fan; 2-Heat; 3-Cool; 4-Dry
+  TEMP: 20,  # number between 16 and 30 (depends on the codeset)
+  FAN: FAN_MEDIUM  # 0-Auto; 1-Low; 2-Med; 3-High
+}
+
 
 class Melissa(object):
     def __init__(self, **kwargs):
         self.username = kwargs['username']
         self.password = kwargs['password']
+        self.default_headers = kwargs.get('headers', HEADERS)
         self.access_token = kwargs.get('access_token', None)
         self.refresh_token = kwargs.get('refresh_token', None)
         self.token_type = kwargs.get('token_type', None)
@@ -58,12 +91,11 @@ class Melissa(object):
             self.access_token = resp['auth']['access_token']
             self.refresh_token = resp['auth']['refresh_token']
             self.token_type = resp['auth']['token_type']
-            self.fetch_devices()
         else:
             raise ApiException(req.text)
 
     def _get_headers(self):
-        headers = HEADERS
+        headers = self.default_headers
         headers.update(
             {'Authorization': "%s %s" % (self.token_type, self.access_token)}
         )
@@ -97,16 +129,32 @@ class Melissa(object):
     def have_connection(self):
         return self.access_token
 
+    def send(self, device, state_data=None):
+        data = DEFAULT_DATA
+        if state_data:
+            data.update(state_data)
+        data.update({SERIAL_NUMBER: device})
+        url = MELISSA_URL % 'provider/send'
+        logger.info(url)
+        headers = self._get_headers()
+        headers.update({'Content-Type': 'application/json'})
+        input_data = json.dumps(data)
+        logger.info(input_data)
+        req = requests.post(url, data=input_data, headers=headers)
+        if not req.status_code == requests.codes.ok:
+            logger.error(req.text)
+        return req.status_code == requests.codes.ok
+
     def status(self):
         url = MELISSA_URL % 'provider/fetch'
         logger.info(url)
         headers = self._get_headers()
         ret = {}
+        if not self.devices:
+            self.fetch_devices()
         for device in self.devices.keys():
             input_data = json.dumps({'serial_number': device})
-            print(input_data)
             headers.update({'Content-Type': 'application/json'})
-            print(headers)
             req = requests.post(
                 url, data=input_data, headers=headers)
             if req.status_code == requests.codes.ok:
