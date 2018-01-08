@@ -164,3 +164,16 @@ class Melissa(object):
                 raise ApiException(req.text)
         logger.debug(ret)
         return ret
+
+    def cur_settings(self, serial_number):
+        url = MELISSA_URL % 'controllers/%s' % serial_number
+        logger.info(url)
+        headers = self._get_headers()
+        req = requests.get(
+                url, headers=headers)
+        if req.status_code == requests.codes.ok:
+            data = json.loads(req.text)
+        else:
+            raise ApiException(req.text)
+        logger.debug(data)
+        return data
