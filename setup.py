@@ -20,13 +20,13 @@ __author__ = 'Magnus Knutas'
 
 setup(
     name='py-melissa-climate',
-    version='0.4.2',
+    version='0.5.0',
     description='Api wrapper for Melissa Climate http://seemelissa.com',
     setup_requires=['setuptools-markdown'],
     long_description_markdown_filename='README.md',
     url='https://github.com/kennedyshead/py-melissa-climate',
     download_url=
-    'https://github.com/kennedyshead/py-melissa-climate/archive/0.4.2.tar.gz',
+    'https://github.com/kennedyshead/py-melissa-climate/archive/0.5.0.tar.gz',
     author='Magnus Knutas',  # Optional
     author_email='magnusknutas@gmail.com',  # Optional
 

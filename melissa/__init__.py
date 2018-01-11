@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+from time import time
 
 import requests
+from datetime import timedelta, datetime
 
 from melissa.exceptions import ApiException
 
@@ -61,6 +63,9 @@ DEFAULT_DATA = {
   FAN: FAN_MEDIUM  # 0-Auto; 1-Low; 2-Med; 3-High
 }
 
+CHANGE_THRESHOLD = 10
+CHANGE_TIME_CACHE_DEFAULT = 120  # 2 min default
+
 
 class Melissa(object):
     def __init__(self, **kwargs):
@@ -72,6 +77,11 @@ class Melissa(object):
         self.token_type = kwargs.get('token_type', None)
         self.devices = {}
         self.geofences = {}
+        self._latest_humidity = None
+        self._latest_temp = None
+        self._latest_status = {}
+        self._time_cache = kwargs.get('time_cache', CHANGE_TIME_CACHE_DEFAULT)
+        self.fetch_timestamp = None
         if not self.have_connection():
             self._connect()
 
@@ -102,6 +112,18 @@ class Melissa(object):
         )
         logger.debug(headers)
         return headers
+
+    def sanity_check(self, data, device):
+        ret = False
+        if not self._latest_temp or self._latest_status[device] and abs(
+                data[TEMP] - self._latest_status[device][TEMP]
+        ) < CHANGE_THRESHOLD:
+            ret = True
+        if not self._latest_temp or self._latest_status[device] and abs(
+                data[HUMIDITY] - self._latest_status[device][HUMIDITY]
+        ) < CHANGE_THRESHOLD:
+            ret = True
+        return ret
 
     def fetch_devices(self):
         url = MELISSA_URL % 'controllers'
@@ -146,24 +168,34 @@ class Melissa(object):
             logger.error(req.text)
         return req.status_code == requests.codes.ok
 
-    def status(self):
+    def status(self, test=False):
+        if self.fetch_timestamp and self._time_cache > \
+                (datetime.utcnow() - self.fetch_timestamp).total_seconds():
+            return self._latest_status
         url = MELISSA_URL % 'provider/fetch'
         logger.info(url)
         headers = self._get_headers()
         ret = {}
         if not self.devices:
             self.fetch_devices()
-        for device in self.devices.keys():
+        for device in self.devices:
             input_data = json.dumps({'serial_number': device})
             headers.update({'Content-Type': 'application/json'})
-            req = requests.post(
-                url, data=input_data, headers=headers)
+            req = self.do_req(url, data=input_data, headers=headers)
             if req.status_code == requests.codes.ok:
                 data = json.loads(req.text)
-                ret[device] = data['provider']
+                if self.sanity_check(data['provider'], device):
+                    ret[device] = data['provider']
+                else:
+                    ret[device] = self._latest_status[device]
+            elif req.status_code == requests.codes.unauthorized and not test:
+                self._connect()
+                return self.status(test=True)
             else:
                 raise ApiException(req.text)
         logger.debug(ret)
+        self.fetch_timestamp = datetime.utcnow()
+        self._latest_status = ret
         return ret
 
     def cur_settings(self, serial_number):
