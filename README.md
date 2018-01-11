@@ -51,3 +51,7 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * Melissa dev team who made a great API
 * Home-assistant.io for the inspiration to write this
+
+## TODO:
+* Fix 401 (for longrunning)
+* Fix Strange bug where api suddenly responds with strange values

@@ -35,6 +35,7 @@ STATE = 'state'
 MODE = 'mode'
 TEMP = 'temp'
 FAN = 'fan'
+HUMIDITY = 'humidity'
 
 FAN_AUTO = 0
 FAN_LOW = 1

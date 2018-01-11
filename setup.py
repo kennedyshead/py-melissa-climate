@@ -9,15 +9,9 @@ https://github.com/pypa/sampleproject
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
-# To use a consistent encoding
-from codecs import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-
-# Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
 
 __author__ = 'Magnus Knutas'
 
@@ -26,12 +20,13 @@ __author__ = 'Magnus Knutas'
 
 setup(
     name='py-melissa-climate',
-    version='0.4.1',
+    version='0.4.2',
     description='Api wrapper for Melissa Climate http://seemelissa.com',
-    long_description=long_description,
+    setup_requires=['setuptools-markdown'],
+    long_description_markdown_filename='README.md',
     url='https://github.com/kennedyshead/py-melissa-climate',
     download_url=
-    'https://github.com/kennedyshead/py-melissa-climate/archive/0.4.1.tar.gz',
+    'https://github.com/kennedyshead/py-melissa-climate/archive/0.4.2.tar.gz',
     author='Magnus Knutas',  # Optional
     author_email='magnusknutas@gmail.com',  # Optional
 
