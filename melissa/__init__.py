@@ -31,43 +31,43 @@ HEADERS = {
     'X-Requested-With': 'at.cloudfaces.melissa'
 }
 
-SERIAL_NUMBER = 'serial_number'
-COMMAND = 'command'
-STATE = 'state'
-MODE = 'mode'
-TEMP = 'temp'
-FAN = 'fan'
-HUMIDITY = 'humidity'
-
-FAN_AUTO = 0
-FAN_LOW = 1
-FAN_MEDIUM = 2
-FAN_HIGH = 3
-
-STATE_OFF = 0
-STATE_ON = 1
-STATE_IDLE = 2
-
-MODE_AUTO = 0
-MODE_FAN = 1
-MODE_HEAT = 2
-MODE_COOL = 3
-MODE_DRY = 4
-
-DEFAULT_DATA = {
-  SERIAL_NUMBER: "",
-  COMMAND: "send_ir_code",
-  STATE: STATE_ON,  # 0-OFF; 1-ON; 2-Idle
-  MODE: MODE_HEAT,  # 0-Auto; 1-Fan; 2-Heat; 3-Cool; 4-Dry
-  TEMP: 20,  # number between 16 and 30 (depends on the codeset)
-  FAN: FAN_MEDIUM  # 0-Auto; 1-Low; 2-Med; 3-High
-}
-
 CHANGE_THRESHOLD = 10
 CHANGE_TIME_CACHE_DEFAULT = 120  # 2 min default
 
 
 class Melissa(object):
+    SERIAL_NUMBER = 'serial_number'
+    COMMAND = 'command'
+    STATE = 'state'
+    MODE = 'mode'
+    TEMP = 'temp'
+    FAN = 'fan'
+    HUMIDITY = 'humidity'
+
+    FAN_AUTO = 0
+    FAN_LOW = 1
+    FAN_MEDIUM = 2
+    FAN_HIGH = 3
+
+    STATE_OFF = 0
+    STATE_ON = 1
+    STATE_IDLE = 2
+
+    MODE_AUTO = 0
+    MODE_FAN = 1
+    MODE_HEAT = 2
+    MODE_COOL = 3
+    MODE_DRY = 4
+
+    DEFAULT_DATA = {
+        SERIAL_NUMBER: "",
+        COMMAND: "send_ir_code",
+        STATE: STATE_ON,  # 0-OFF; 1-ON; 2-Idle
+        MODE: MODE_HEAT,  # 0-Auto; 1-Fan; 2-Heat; 3-Cool; 4-Dry
+        TEMP: 20,  # number between 16 and 30 (depends on the codeset)
+        FAN: FAN_MEDIUM  # 0-Auto; 1-Low; 2-Med; 3-High
+    }
+
     def __init__(self, **kwargs):
         self.username = kwargs['username']
         self.password = kwargs['password']
@@ -116,11 +116,12 @@ class Melissa(object):
     def sanity_check(self, data, device):
         ret = False
         if not self._latest_temp or self._latest_status[device] and abs(
-                data[TEMP] - self._latest_status[device][TEMP]
+                data[self.TEMP] - self._latest_status[device][self.TEMP]
         ) < CHANGE_THRESHOLD:
             ret = True
         if not self._latest_temp or self._latest_status[device] and abs(
-                data[HUMIDITY] - self._latest_status[device][HUMIDITY]
+                data[self.HUMIDITY] - self._latest_status[
+                    device][self.HUMIDITY]
         ) < CHANGE_THRESHOLD:
             ret = True
         return ret
@@ -153,10 +154,10 @@ class Melissa(object):
         return self.access_token
 
     def send(self, device, state_data=None):
-        data = DEFAULT_DATA
+        data = self.DEFAULT_DATA
         if state_data:
             data.update(state_data)
-        data.update({SERIAL_NUMBER: device})
+        data.update({self.SERIAL_NUMBER: device})
         url = MELISSA_URL % 'provider/send'
         logger.info(url)
         headers = self._get_headers()
@@ -181,7 +182,8 @@ class Melissa(object):
         for device in self.devices:
             input_data = json.dumps({'serial_number': device})
             headers.update({'Content-Type': 'application/json'})
-            req = self.do_req(url, data=input_data, headers=headers)
+            req = requests.post(
+                url, data=input_data, headers=headers)
             if req.status_code == requests.codes.ok:
                 data = json.loads(req.text)
                 if self.sanity_check(data['provider'], device):
