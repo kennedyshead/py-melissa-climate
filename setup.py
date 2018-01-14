@@ -11,6 +11,8 @@ https://github.com/pypa/sampleproject
 from setuptools import setup, find_packages
 from os import path
 
+import melissa
+
 here = path.abspath(path.dirname(__file__))
 
 __author__ = 'Magnus Knutas'
@@ -20,14 +22,14 @@ __author__ = 'Magnus Knutas'
 
 setup(
     name='py-melissa-climate',
-    version='0.5.0',
+    version=melissa.VERSION,
     description='Api wrapper for Melissa Climate http://seemelissa.com',
     setup_requires=['setuptools-markdown'],
     long_description_markdown_filename='README.md',
     url='https://github.com/kennedyshead/py-melissa-climate',
     download_url=
-    'https://github.com/kennedyshead/py-melissa-climate/archive/0.5.0.tar.gz',
-    author='Magnus Knutas',  # Optional
+    'https://github.com/kennedyshead/py-melissa-climate/archive/%s.tar.gz' % melissa.VERSION,
+    author=melissa.__author__,
     author_email='magnusknutas@gmail.com',  # Optional
 
     # Classifiers help users find your project by categorizing it.

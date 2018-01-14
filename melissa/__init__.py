@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-from time import time
 
 import requests
-from datetime import timedelta, datetime
+from datetime import datetime
 
 from melissa.exceptions import ApiException
 
 __author__ = 'Magnus Knutas'
 
 logger = logging.getLogger(__name__)
+
+VERSION = '0.5.2'
 
 MELISSA_URL = 'http://developer-api.seemelissa.com/v1/%s'
 CLIENT_DATA = {
@@ -114,16 +115,16 @@ class Melissa(object):
         return headers
 
     def sanity_check(self, data, device):
-        ret = False
-        if not self._latest_temp or self._latest_status[device] and abs(
+        ret = True
+        if self._latest_temp and self._latest_status.get(device) and abs(
                 data[self.TEMP] - self._latest_status[device][self.TEMP]
-        ) < CHANGE_THRESHOLD:
-            ret = True
-        if not self._latest_temp or self._latest_status[device] and abs(
+        ) > CHANGE_THRESHOLD:
+            ret = False
+        if self._latest_temp and self._latest_status.get(device) and abs(
                 data[self.HUMIDITY] - self._latest_status[
                     device][self.HUMIDITY]
-        ) < CHANGE_THRESHOLD:
-            ret = True
+        ) > CHANGE_THRESHOLD:
+            ret = False
         return ret
 
     def fetch_devices(self):
