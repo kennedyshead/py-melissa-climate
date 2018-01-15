@@ -12,8 +12,6 @@ __author__ = 'Magnus Knutas'
 
 logger = logging.getLogger(__name__)
 
-VERSION = '0.5.3'
-
 MELISSA_URL = 'http://developer-api.seemelissa.com/v1/%s'
 CLIENT_DATA = {
     'client_id': 'mclimate',

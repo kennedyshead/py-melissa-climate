@@ -11,11 +11,10 @@ https://github.com/pypa/sampleproject
 from setuptools import setup, find_packages
 from os import path
 
-from melissa import VERSION
-
 here = path.abspath(path.dirname(__file__))
 
 __author__ = 'Magnus Knutas'
+VERSION = '0.5.4'
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
