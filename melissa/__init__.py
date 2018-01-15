@@ -86,12 +86,12 @@ class Melissa(object):
 
     def _connect(self):
         url = MELISSA_URL % 'auth/login'
-        logger.info(url)
-        data = CLIENT_DATA
+        logger.warning(url)
+        data = CLIENT_DATA.copy()
         data.update(
             {'username': self.username, 'password': self.password}
         )
-        logger.debug(data)
+        logger.warning(data)
         req = requests.post(
             url, data=data,
             headers=HEADERS
@@ -105,7 +105,7 @@ class Melissa(object):
             raise ApiException(req.text)
 
     def _get_headers(self):
-        headers = self.default_headers
+        headers = self.default_headers.copy()
         headers.update(
             {'Authorization': "%s %s" % (self.token_type, self.access_token)}
         )
