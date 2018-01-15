@@ -12,7 +12,7 @@ __author__ = 'Magnus Knutas'
 
 logger = logging.getLogger(__name__)
 
-VERSION = '0.5.2'
+VERSION = '0.5.3'
 
 MELISSA_URL = 'http://developer-api.seemelissa.com/v1/%s'
 CLIENT_DATA = {
@@ -196,7 +196,6 @@ class Melissa(object):
                 return self.status(test=True)
             else:
                 raise ApiException(req.text)
-        logger.debug(ret)
         self.fetch_timestamp = datetime.utcnow()
         self._latest_status = ret
         return ret
