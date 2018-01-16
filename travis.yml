@@ -10,7 +10,7 @@ python:
   - "nightly"
 # command to install dependencies
 install:
-  - pip install -e setup.py . mock
+  - pip install -e . mock
 # command to run tests
 script:
   - python -m unittest tests/ # or py.test for Python versions 3.5 and below
