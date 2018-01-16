@@ -5,7 +5,7 @@ This is an unofficial wrapper for melissa web api: http://seemelissa.com/en
 ### Installing
 
 ```
-pip install requests
+pip install py-melissa-climate
 ```
 
 ```
