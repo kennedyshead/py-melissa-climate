@@ -9,6 +9,7 @@ python:
   - "3.7-dev"  # 3.7 development branch
   - "nightly"
 # command to install dependencies
+cache: pip
 install:
   - pip install -e . mock
 # command to run tests
