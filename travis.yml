@@ -13,4 +13,4 @@ install:
   - pip install -e . mock
 # command to run tests
 script:
-  - python -m unittest tests/ # or py.test for Python versions 3.5 and below
+  - python -m unittest discover -s tests -p "test_*.py"
