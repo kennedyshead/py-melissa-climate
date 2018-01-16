@@ -1,0 +1,38 @@
+{
+  "_embedded": {
+    "geofence": [
+      {
+        "controller_id": "12345678",
+        "user_id": 1,
+        "latitude": 1,
+        "longitude": 1,
+        "radius": 1500,
+        "enter_command_name": "send_ir_code",
+        "enter_command_fields": "{\"state\":1,\"mode\":\"2\",\"temp\":30,\"fan\":\"3\"}",
+        "exit_command_name": "send_ir_code",
+        "exit_command_fields": "{\"state\":0,\"mode\":3,\"temp\":25,\"fan\":0}",
+        "active": 1,
+        "enter_push": 1,
+        "exit_push": 1,
+        "id": 1,
+        "_links": {
+          "self": {
+            "href": "\/v1\/geofences\/1"
+          }
+        }
+      }
+    ]
+  },
+  "total": 1,
+  "_links": {
+    "self": {
+      "href": "\/v1\/geofences"
+    },
+    "first": {
+      "href": "\/v1\/geofences?page=1"
+    },
+    "last": {
+      "href": "\/v1\/geofences?page=1"
+    }
+  }
+}

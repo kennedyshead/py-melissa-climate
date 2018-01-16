@@ -1,0 +1,14 @@
+{
+  "auth": {
+    "access_token": "12345678",
+    "expires_in": 3600,
+    "token_type": "Bearer",
+    "scope": null,
+    "refresh_token": "12345678"
+  },
+  "_links": {
+    "self": {
+      "href": "\/v1\/auth\/login"
+    }
+  }
+}

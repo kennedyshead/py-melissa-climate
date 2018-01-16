@@ -1,0 +1,6 @@
+{
+  "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
+  "status": 500,
+  "title": "Internal Server Error",
+  "detail": "Sorry,for the inconvenience. We are experiencing internal problems"
+}

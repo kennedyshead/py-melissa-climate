@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "error": "invalid_grant",
+    "error_description": "Invalid username and password combination"
+  },
+  "_links": {
+    "self": {
+      "href": "\\/v1\\/auth\\/login"
+    }
+  }
+}

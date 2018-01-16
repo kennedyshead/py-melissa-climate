@@ -4,4 +4,15 @@ __author__ = 'Magnus Knutas'
 
 
 class ApiException(Exception):
-    pass
+
+    def __init__(self, *args):
+        self._message = args[0]
+        self._status_code = args[1]
+
+    @property
+    def message(self):
+        return self._message
+
+    @property
+    def status_code(self):
+        return self._status_code

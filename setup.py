@@ -47,6 +47,6 @@ setup(
     install_requires=['requests'],
     extras_require={  # Optional
         'dev': ['check-manifest'],
-        'test': ['coverage'],
+        'test': ['coverage', 'mock'],
     },
 )

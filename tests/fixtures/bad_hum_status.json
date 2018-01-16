@@ -1,0 +1,13 @@
+{
+  "provider": {
+    "temp": 28.9,
+    "raw_temperature": 29512,
+    "humidity": 9,
+    "raw_humidity": 11030
+  },
+  "_links": {
+    "self": {
+      "href": "\/v1\/provider\/fetch"
+    }
+  }
+}
