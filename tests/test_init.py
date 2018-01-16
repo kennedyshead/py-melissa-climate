@@ -7,7 +7,7 @@ import mock
 
 from melissa import ApiException
 from melissa.wrapper import MELISSA_URL, Melissa
-from .helpers import load_fixture
+from tests.helpers import load_fixture
 
 __author__ = 'Magnus Knutas'
 
