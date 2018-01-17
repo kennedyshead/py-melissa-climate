@@ -167,8 +167,8 @@ class Melissa(object):
             logger.error(req.text)
         return req.status_code == requests.codes.ok
 
-    def status(self, test=False):
-        if self.fetch_timestamp and self._time_cache > \
+    def status(self, test=False, cached=False):
+        if cached and self.fetch_timestamp and self._time_cache > \
                 (datetime.utcnow() - self.fetch_timestamp).total_seconds():
             return self._latest_status
         url = MELISSA_URL % 'provider/fetch'
