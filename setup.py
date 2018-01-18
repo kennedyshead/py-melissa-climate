@@ -29,12 +29,7 @@ setup(
     download_url=
     'https://github.com/kennedyshead/py-melissa-climate/archive/%s.tar.gz' % VERSION,
     author=__author__,
-    author_email='magnusknutas@gmail.com',  # Optional
-
-    # Classifiers help users find your project by categorizing it.
-    #
-    # For a list of valid classifiers, see
-    # https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    author_email='magnusknutas@gmail.com',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
@@ -45,7 +40,8 @@ setup(
     keywords='Api Melissa development wrapper',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=['requests'],
-    extras_require={  # Optional
+    test_suite='tests',
+    extras_require={
         'dev': ['check-manifest'],
         'test': ['coverage', 'mock'],
     },
