@@ -2,6 +2,8 @@
 
 This is an unofficial wrapper for melissa web api: http://seemelissa.com/en
 
+[Coffee fundraiser](https://paypal.me/pools/c/8177s58qSX)
+
 ### Installing
 
 ```
