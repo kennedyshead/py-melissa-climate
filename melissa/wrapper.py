@@ -183,6 +183,7 @@ class Melissa(object):
         return req.status_code == requests.codes.ok
 
     def status(self, test=False, cached=False):
+        # TODO: Update self._send_cache
         if cached and self.fetch_timestamp and self._time_cache > \
                 (datetime.utcnow() - self.fetch_timestamp).total_seconds():
             return self._latest_status
