@@ -85,6 +85,7 @@ class Melissa(object):
         self._latest_status = {}
         self._time_cache = kwargs.get('time_cache', CHANGE_TIME_CACHE_DEFAULT)
         self.fetch_timestamp = None
+        self._send_cache = None
         if not self.have_connection():
             self._connect()
 
@@ -158,7 +159,10 @@ class Melissa(object):
         return self.access_token
 
     def send(self, device, state_data=None):
-        data = self.DEFAULT_DATA.copy()
+        if not self._send_cache:
+            data = self.DEFAULT_DATA.copy()
+        else:
+            data = self._send_cache
         if state_data:
             data.update(state_data)
         data.update({self.SERIAL_NUMBER: device})
@@ -166,6 +170,10 @@ class Melissa(object):
         logger.info(url)
         headers = self._get_headers()
         headers.update({'Content-Type': 'application/json'})
+        if self._send_cache == data:
+            return True
+        else:
+            self.send_cache = data
         input_data = json.dumps(data)
         logger.info(input_data)
         req = session.post(url, data=input_data, headers=headers)
