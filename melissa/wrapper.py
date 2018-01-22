@@ -3,6 +3,7 @@
 import json
 import logging
 
+from requests_futures.sessions import FuturesSession
 import requests
 from datetime import datetime
 
@@ -11,6 +12,8 @@ from melissa.exceptions import ApiException
 __author__ = 'Magnus Knutas'
 
 logger = logging.getLogger(__name__)
+
+session = FuturesSession(max_workers=10)
 
 MELISSA_URL = 'http://developer-api.seemelissa.com/v1/%s'
 CLIENT_DATA = {
@@ -93,10 +96,11 @@ class Melissa(object):
             {'username': self.username, 'password': self.password}
         )
         logger.info(data)
-        req = requests.post(
+        req = session.post(
             url, data=data,
             headers=HEADERS
         )
+        req = req.result()
         if req.status_code == requests.codes.ok:
             resp = json.loads(req.text)
             self.access_token = resp['auth']['access_token']
@@ -128,7 +132,8 @@ class Melissa(object):
         url = MELISSA_URL % 'controllers'
         logger.info(url)
         headers = self._get_headers()
-        req = requests.get(url, headers=headers)
+        req = session.get(url, headers=headers)
+        req = req.result()
         if req.status_code == requests.codes.ok:
             resp = json.loads(req.text)
             for controller in resp['_embedded']['controller']:
@@ -140,7 +145,8 @@ class Melissa(object):
         url = MELISSA_URL % 'geofences'
         logger.info(url)
         headers = self._get_headers()
-        req = requests.get(url, headers=headers)
+        req = session.get(url, headers=headers)
+        req = req.result()
         if req.status_code == requests.codes.ok:
             resp = json.loads(req.text)
             for geofence in resp['_embedded']['geofence']:
@@ -162,7 +168,8 @@ class Melissa(object):
         headers.update({'Content-Type': 'application/json'})
         input_data = json.dumps(data)
         logger.info(input_data)
-        req = requests.post(url, data=input_data, headers=headers)
+        req = session.post(url, data=input_data, headers=headers)
+        req = req.result()
         if not req.status_code == requests.codes.ok:
             logger.error(req.text)
         return req.status_code == requests.codes.ok
@@ -180,8 +187,9 @@ class Melissa(object):
             self.fetch_devices()
         for device in self.devices:
             input_data = json.dumps({'serial_number': device})
-            req = requests.post(
+            req = session.post(
                 url, data=input_data, headers=headers)
+            req = req.result()
             if req.status_code == requests.codes.ok:
                 data = json.loads(req.text)
                 if self.sanity_check(data['provider'], device):
@@ -201,8 +209,9 @@ class Melissa(object):
         url = MELISSA_URL % 'controllers/%s' % serial_number
         logger.info(url)
         headers = self._get_headers()
-        req = requests.get(
+        req = session.get(
                 url, headers=headers)
+        req = req.result()
         if req.status_code == requests.codes.ok:
             data = json.loads(req.text)
         else:
