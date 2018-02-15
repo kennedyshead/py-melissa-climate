@@ -195,7 +195,7 @@ class Melissa(object):
         if not self.devices:
             self.fetch_devices()
         for device in self.devices:
-            if device['type'] == 'melissa':
+            if self.devices[device]['type'] == 'melissa':
                 input_data = json.dumps({'serial_number': device})
                 req = session.post(
                     url, data=input_data, headers=headers)
