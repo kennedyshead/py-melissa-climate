@@ -173,7 +173,7 @@ class Melissa(object):
         if self._send_cache == data:
             return True
         else:
-            self.send_cache = data
+            self._send_cache = data
         input_data = json.dumps(data)
         logger.info(input_data)
         req = session.post(url, data=input_data, headers=headers)
