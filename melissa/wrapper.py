@@ -195,21 +195,23 @@ class Melissa(object):
         if not self.devices:
             self.fetch_devices()
         for device in self.devices:
-            input_data = json.dumps({'serial_number': device})
-            req = session.post(
-                url, data=input_data, headers=headers)
-            req = req.result()
-            if req.status_code == requests.codes.ok:
-                data = json.loads(req.text)
-                if self.sanity_check(data['provider'], device):
-                    ret[device] = data['provider']
+            if device['type'] == 'melissa':
+                input_data = json.dumps({'serial_number': device})
+                req = session.post(
+                    url, data=input_data, headers=headers)
+                req = req.result()
+                if req.status_code == requests.codes.ok:
+                    data = json.loads(req.text)
+                    if self.sanity_check(data['provider'], device):
+                        ret[device] = data['provider']
+                    else:
+                        ret[device] = self._latest_status[device]
+                elif req.status_code == requests.codes.unauthorized and \
+                        not test:
+                    self._connect()
+                    return self.status(test=True)
                 else:
-                    ret[device] = self._latest_status[device]
-            elif req.status_code == requests.codes.unauthorized and not test:
-                self._connect()
-                return self.status(test=True)
-            else:
-                raise ApiException(req.text)
+                    raise ApiException(req.text)
         self.fetch_timestamp = datetime.utcnow()
         self._latest_status = ret
         return ret
