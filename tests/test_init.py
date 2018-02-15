@@ -228,7 +228,8 @@ class TestMelissa(TestCase):
         self.assertTrue(melissa.send('12345678', {'temp': 20}))
         with mock.patch('melissa.wrapper.session.post',
                         side_effect=mocked_requests_post_bad) as mock_post:
-            self.assertFalse(melissa.send('12345678', {'temp': 20}))
+            melissa._send_cache = None
+            self.assertFalse(melissa.send('12345678', {'temp': 21}))
 
     @mock.patch('melissa.wrapper.session.get',
                 side_effect=mocked_requests_get)
