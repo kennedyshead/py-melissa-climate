@@ -7,7 +7,10 @@ class ApiException(Exception):
 
     def __init__(self, *args):
         self._message = args[0]
-        self._status_code = args[1]
+        try:
+            self._status_code = args[1]
+        except IndexError:
+            self._status_code = None
 
     @property
     def message(self):
