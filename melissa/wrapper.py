@@ -162,7 +162,7 @@ class Melissa(object):
         if not self._send_cache:
             data = self.DEFAULT_DATA.copy()
         else:
-            data = self._send_cache
+            data = self._send_cache.copy()
         if state_data:
             data.update(state_data)
         data.update({self.SERIAL_NUMBER: device})
@@ -179,7 +179,7 @@ class Melissa(object):
         req = session.post(url, data=input_data, headers=headers)
         req = req.result()
         if not req.status_code == requests.codes.ok:
-            logger.error(req.text)
+            return False
         return req.status_code == requests.codes.ok
 
     def status(self, test=False, cached=False):
