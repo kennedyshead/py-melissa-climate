@@ -40,7 +40,7 @@ class AsyncMelissa(CoreMelissa):
         self.fetch_timestamp = None
         self._send_cache = None
 
-    async def _connect(self):
+    async def async_connect(self):
         url = MELISSA_URL % 'auth/login'
         LOGGER.info(url)
         data = CLIENT_DATA.copy()
@@ -112,7 +112,7 @@ class AsyncMelissa(CoreMelissa):
             return False
         return req.status == requests.codes.ok
 
-    def async_status(self, test=False, cached=False):
+    async def async_status(self, test=False, cached=False):
         # TODO: Update self._send_cache
         if cached and self.fetch_timestamp and self._time_cache > \
                 (datetime.utcnow() - self.fetch_timestamp).total_seconds():
@@ -137,7 +137,7 @@ class AsyncMelissa(CoreMelissa):
                         ret[device] = self._latest_status[device]
                 elif req.status == requests.codes.unauthorized and \
                         not test:
-                    self._connect()
+                    await self.async_connect()
                     return self.async_status()
                 else:
                     raise ApiException(req.text)
@@ -145,7 +145,7 @@ class AsyncMelissa(CoreMelissa):
         self._latest_status = ret
         return ret
 
-    def cur_settings(self, serial_number):
+    async def async_cur_settings(self, serial_number):
         url = MELISSA_URL % 'controllers/%s' % serial_number
         LOGGER.info(url)
         headers = self._get_headers()
