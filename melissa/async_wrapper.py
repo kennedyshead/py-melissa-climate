@@ -53,12 +53,12 @@ class AsyncMelissa(CoreMelissa):
             headers=HEADERS
         )
         if req.status == requests.codes.ok:
-            resp = json.loads(req.text)
+            resp = json.loads(await req.text())
             self.access_token = resp['auth']['access_token']
             self.refresh_token = resp['auth']['refresh_token']
             self.token_type = resp['auth']['token_type']
         else:
-            raise ApiException(req.text, req.status)
+            raise ApiException(await req.text(), req.status)
 
     async def async_fetch(self, url):
         response = await self.session.get(url)
@@ -71,7 +71,7 @@ class AsyncMelissa(CoreMelissa):
         headers = self._get_headers()
         req = await self.session.get(url, headers=headers)
         if req.status == requests.codes.ok:
-            resp = json.loads(req.text)
+            resp = json.loads(await req.text())
             for controller in resp['_embedded']['controller']:
                 self.devices[controller['serial_number']] = controller
         LOGGER.debug(self.devices)
@@ -83,7 +83,7 @@ class AsyncMelissa(CoreMelissa):
         headers = self._get_headers()
         req = await self.session.get(url, headers=headers)
         if req.status == requests.codes.ok:
-            resp = json.loads(req.text)
+            resp = json.loads(await req.text())
             for geofence in resp['_embedded']['geofence']:
                 self.geofences[geofence['controller_id']] = geofence
         LOGGER.info(self.geofences)
@@ -130,7 +130,7 @@ class AsyncMelissa(CoreMelissa):
                 req = await self.session.post(
                     url, data=input_data, headers=headers)
                 if req.status == requests.codes.ok:
-                    data = json.loads(req.text)
+                    data = json.loads(await req.text())
                     if self.sanity_check(data['provider'], device):
                         ret[device] = data['provider']
                     else:
@@ -140,7 +140,7 @@ class AsyncMelissa(CoreMelissa):
                     await self.async_connect()
                     return self.async_status()
                 else:
-                    raise ApiException(req.text)
+                    raise ApiException(await req.text())
         self.fetch_timestamp = datetime.utcnow()
         self._latest_status = ret
         return ret
@@ -152,8 +152,8 @@ class AsyncMelissa(CoreMelissa):
         req = await self.session.get(
                 url, headers=headers)
         if req.status == requests.codes.ok:
-            data = json.loads(req.text)
+            data = json.loads(await req.text())
         else:
-            raise ApiException(req.text)
+            raise ApiException(await req.text())
         LOGGER.debug(data)
         return data
