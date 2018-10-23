@@ -14,7 +14,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 __author__ = 'Magnus Knutas'
-VERSION = '1.0.6'
+VERSION = '2.0.0'
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -39,7 +39,7 @@ setup(
     ],
     keywords='Api Melissa development wrapper',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['requests', 'requests-futures'],
+    install_requires=['requests', 'requests-futures', 'aiohttp'],
     test_suite='tests',
     extras_require={
         'dev': ['check-manifest'],
