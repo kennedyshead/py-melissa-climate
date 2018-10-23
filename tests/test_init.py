@@ -148,7 +148,7 @@ def mocked_requests_get(*args, **kwargs):
 
 class TestMelissa(TestCase):
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_init(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
@@ -157,25 +157,25 @@ class TestMelissa(TestCase):
         self.assertEqual(melissa.username, '1234')
         self.assertEqual(melissa.password, '4321')
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_connect_ok(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
         self.assertIsNone(melissa._connect())
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post_bad)
     def test_connect_bad(self, mock_post):
         self.assertRaises(ApiException, Melissa,
                           username="1234", password="4321")
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_get_headers(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
         self.assertEqual(melissa._get_headers(), LOGGED_IN_HEADERS)
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_sanity_check(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
@@ -188,25 +188,25 @@ class TestMelissa(TestCase):
         data = json.loads(load_fixture('bad_hum_status.json'))['provider']
         self.assertFalse(melissa.sanity_check(data, device))
 
-    @mock.patch('melissa.wrapper.session.get',
+    @mock.patch('melissa.wrapper.SESSION.get',
                 side_effect=mocked_requests_get)
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_fetch_devices(self, mock_get, mock_post):
         melissa = Melissa(username="1234", password="4321")
         resp = melissa.fetch_devices()
         self.assertEqual(resp, FETCH_DEVICES_DATA_OK)
 
-    @mock.patch('melissa.wrapper.session.get',
+    @mock.patch('melissa.wrapper.SESSION.get',
                 side_effect=mocked_requests_get)
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_fetch_geofences(self, mock_get, mock_post):
         melissa = Melissa(username="1234", password="4321")
         resp = melissa.fetch_geofences()
         self.assertEqual(resp, FETCH_GEOFENCES_DATA_OK)
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_have_connection(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
@@ -214,39 +214,39 @@ class TestMelissa(TestCase):
         melissa.access_token = None
         self.assertFalse(melissa.have_connection())
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_send_ok(self, mock_post):
         melissa = Melissa(username="1234", password="4321")
         self.assertTrue(melissa.send('12345678', {'temp': 20}))
 
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
-    @mock.patch('melissa.wrapper.logger')
+    @mock.patch('melissa.wrapper.LOGGER')
     def test_send(self, mock_post, mock_logger):
         melissa = Melissa(username="1234", password="4321")
         self.assertTrue(melissa.send('12345678', {'temp': 20}))
-        with mock.patch('melissa.wrapper.session.post',
+        with mock.patch('melissa.wrapper.SESSION.post',
                         side_effect=mocked_requests_post_bad) as mock_post:
             melissa._send_cache = None
             self.assertFalse(melissa.send('12345678', {'temp': 21}))
 
-    @mock.patch('melissa.wrapper.session.get',
+    @mock.patch('melissa.wrapper.SESSION.get',
                 side_effect=mocked_requests_get)
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_status(self, mocked_get, mocked_post):
         melissa = Melissa(username="1234", password="4321")
         good_status = melissa.status()
-        with mock.patch('melissa.wrapper.session.post',
+        with mock.patch('melissa.wrapper.SESSION.post',
                         side_effect=mocked_requests_post_bad) as mock_post:
             melissa.fetch_timestamp = None
             bad_status = melissa.status()
         self.assertEqual(good_status, bad_status)
 
-    @mock.patch('melissa.wrapper.session.get',
+    @mock.patch('melissa.wrapper.SESSION.get',
                 side_effect=mocked_requests_get)
-    @mock.patch('melissa.wrapper.session.post',
+    @mock.patch('melissa.wrapper.SESSION.post',
                 side_effect=mocked_requests_post)
     def test_cur_settings(self, mocked_get, mocked_post):
         melissa = Melissa(username="1234", password="4321")

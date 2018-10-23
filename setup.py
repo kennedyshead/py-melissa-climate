@@ -39,7 +39,7 @@ setup(
     ],
     keywords='Api Melissa development wrapper',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    install_requires=['requests', 'requests-futures'],
+    install_requires=['requests', 'requests-futures', 'aiohttp'],
     test_suite='tests',
     extras_require={
         'dev': ['check-manifest'],

@@ -1,26 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+Async version of the wrapper.
+"""
 import json
 import logging
-
-import requests
-from requests_futures.sessions import FuturesSession
 from datetime import datetime
 
-from melissa.core import CoreMelissa, CHANGE_TIME_CACHE_DEFAULT, HEADERS, \
-    MELISSA_URL, CLIENT_DATA
+import aiohttp
+import requests
 from melissa.exceptions import ApiException
+
+from melissa import CHANGE_TIME_CACHE_DEFAULT, HEADERS, MELISSA_URL, \
+    CLIENT_DATA
+from melissa.core import CoreMelissa
 
 __author__ = 'Magnus Knutas'
 LOGGER = logging.getLogger(__name__)
 
-SESSION = FuturesSession(max_workers=10)
 
-
-class Melissa(CoreMelissa):
+class AsyncMelissa(CoreMelissa):
+    """
+    Async class for Melissa.
+    """
+    session = None
 
     def __init__(self, **kwargs):
-        super(Melissa, self).__init__(**kwargs)
+        super(AsyncMelissa, self).__init__(**kwargs)
+        self.session = aiohttp.ClientSession()
         self.username = kwargs['username']
         self.password = kwargs['password']
         self.refresh_token = kwargs.get('refresh_token', None)
@@ -28,13 +35,12 @@ class Melissa(CoreMelissa):
         self.geofences = {}
         self._latest_humidity = None
         self._latest_temp = None
+        self._latest_status = {}
         self._time_cache = kwargs.get('time_cache', CHANGE_TIME_CACHE_DEFAULT)
         self.fetch_timestamp = None
         self._send_cache = None
-        if not self.have_connection():
-            self._connect()
 
-    def _connect(self):
+    async def _connect(self):
         url = MELISSA_URL % 'auth/login'
         LOGGER.info(url)
         data = CLIENT_DATA.copy()
@@ -42,46 +48,48 @@ class Melissa(CoreMelissa):
             {'username': self.username, 'password': self.password}
         )
         LOGGER.info(data)
-        req = SESSION.post(
+        req = await self.session.post(
             url, data=data,
             headers=HEADERS
         )
-        req = req.result()
-        if req.status_code == requests.codes.ok:
+        if req.status == requests.codes.ok:
             resp = json.loads(req.text)
             self.access_token = resp['auth']['access_token']
             self.refresh_token = resp['auth']['refresh_token']
             self.token_type = resp['auth']['token_type']
         else:
-            raise ApiException(req.text, req.status_code)
+            raise ApiException(req.text, req.status)
 
-    def fetch_devices(self):
+    async def async_fetch(self, url):
+        response = await self.session.get(url)
+        ret = await response.text()
+        return ret
+
+    async def async_fetch_devices(self):
         url = MELISSA_URL % 'controllers'
         LOGGER.info(url)
         headers = self._get_headers()
-        req = SESSION.get(url, headers=headers)
-        req = req.result()
-        if req.status_code == requests.codes.ok:
+        req = await self.session.get(url, headers=headers)
+        if req.status == requests.codes.ok:
             resp = json.loads(req.text)
             for controller in resp['_embedded']['controller']:
                 self.devices[controller['serial_number']] = controller
         LOGGER.debug(self.devices)
         return self.devices
 
-    def fetch_geofences(self):
+    async def async_fetch_geofences(self):
         url = MELISSA_URL % 'geofences'
         LOGGER.info(url)
         headers = self._get_headers()
-        req = SESSION.get(url, headers=headers)
-        req = req.result()
-        if req.status_code == requests.codes.ok:
+        req = await self.session.get(url, headers=headers)
+        if req.status == requests.codes.ok:
             resp = json.loads(req.text)
             for geofence in resp['_embedded']['geofence']:
                 self.geofences[geofence['controller_id']] = geofence
         LOGGER.info(self.geofences)
         return self.geofences
 
-    def send(self, device, state_data=None):
+    async def async_send(self, device, state_data=None):
         if not self._send_cache:
             data = self.DEFAULT_DATA.copy()
         else:
@@ -99,13 +107,12 @@ class Melissa(CoreMelissa):
             self._send_cache = data
         input_data = json.dumps(data)
         LOGGER.info(input_data)
-        req = SESSION.post(url, data=input_data, headers=headers)
-        req = req.result()
-        if not req.status_code == requests.codes.ok:
+        req = await self.session.post(url, data=input_data, headers=headers)
+        if not req.status == requests.codes.ok:
             return False
-        return req.status_code == requests.codes.ok
+        return req.status == requests.codes.ok
 
-    def status(self, test=False, cached=False):
+    def async_status(self, test=False, cached=False):
         # TODO: Update self._send_cache
         if cached and self.fetch_timestamp and self._time_cache > \
                 (datetime.utcnow() - self.fetch_timestamp).total_seconds():
@@ -116,23 +123,22 @@ class Melissa(CoreMelissa):
         headers.update({'Content-Type': 'application/json'})
         ret = {}
         if not self.devices:
-            self.fetch_devices()
+            await self.async_fetch_devices()
         for device in self.devices:
             if self.devices[device]['type'] == 'melissa':
                 input_data = json.dumps({'serial_number': device})
-                req = SESSION.post(
+                req = await self.session.post(
                     url, data=input_data, headers=headers)
-                req = req.result()
-                if req.status_code == requests.codes.ok:
+                if req.status == requests.codes.ok:
                     data = json.loads(req.text)
                     if self.sanity_check(data['provider'], device):
                         ret[device] = data['provider']
                     else:
                         ret[device] = self._latest_status[device]
-                elif req.status_code == requests.codes.unauthorized and \
+                elif req.status == requests.codes.unauthorized and \
                         not test:
                     self._connect()
-                    return self.status(test=True)
+                    return self.async_status()
                 else:
                     raise ApiException(req.text)
         self.fetch_timestamp = datetime.utcnow()
@@ -143,10 +149,9 @@ class Melissa(CoreMelissa):
         url = MELISSA_URL % 'controllers/%s' % serial_number
         LOGGER.info(url)
         headers = self._get_headers()
-        req = SESSION.get(
+        req = await self.session.get(
                 url, headers=headers)
-        req = req.result()
-        if req.status_code == requests.codes.ok:
+        if req.status == requests.codes.ok:
             data = json.loads(req.text)
         else:
             raise ApiException(req.text)
