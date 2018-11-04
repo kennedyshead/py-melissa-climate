@@ -57,13 +57,19 @@ class CoreMelissa:
     MODE_COOL = 3
     MODE_DRY = 4
 
-    DEFAULT_DATA = {
+    DEFAULT_DATA_MELISSA = {
         SERIAL_NUMBER: "",
         COMMAND: "send_ir_code",
         STATE: STATE_ON,  # 0-OFF; 1-ON; 2-Idle
         MODE: MODE_HEAT,  # 0-Auto; 1-Fan; 2-Heat; 3-Cool; 4-Dry
         TEMP: 20,  # number between 16 and 30 (depends on the codeset)
         FAN: FAN_MEDIUM  # 0-Auto; 1-Low; 2-Med; 3-High
+    }
+
+    DEFAULT_DATA_BOBBIE = {
+        SERIAL_NUMBER: "",
+        COMMAND: "switch_on_off",
+        STATE: 'on'
     }
 
     def __init__(self, **kwargs):

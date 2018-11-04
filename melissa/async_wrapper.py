@@ -89,9 +89,12 @@ class AsyncMelissa(CoreMelissa):
         LOGGER.info(self.geofences)
         return self.geofences
 
-    async def async_send(self, device, state_data=None):
+    async def async_send(self, device, device_type='melissa', state_data=None):
         if not self._send_cache:
-            data = self.DEFAULT_DATA.copy()
+            if device_type == 'melissa':
+                data = self.DEFAULT_DATA_MELISSA.copy()
+            if device_type == 'bobbie':
+                data = self.DEFAULT_DATA_BOBBIE.copy()
         else:
             data = self._send_cache.copy()
         if state_data:
@@ -108,8 +111,6 @@ class AsyncMelissa(CoreMelissa):
         input_data = json.dumps(data)
         LOGGER.info(input_data)
         req = await self.session.post(url, data=input_data, headers=headers)
-        if not req.status == requests.codes.ok:
-            return False
         return req.status == requests.codes.ok
 
     async def async_status(self, test=False, cached=False):

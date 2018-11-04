@@ -81,9 +81,12 @@ class Melissa(CoreMelissa):
         LOGGER.info(self.geofences)
         return self.geofences
 
-    def send(self, device, state_data=None):
+    def send(self, device, device_type='melissa', state_data=None):
         if not self._send_cache:
-            data = self.DEFAULT_DATA.copy()
+            if device_type == 'melissa':
+                data = self.DEFAULT_DATA_MELISSA.copy()
+            if device_type == 'bobbie':
+                data = self.DEFAULT_DATA_BOBBIE.copy()
         else:
             data = self._send_cache.copy()
         if state_data:
