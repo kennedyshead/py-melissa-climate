@@ -125,7 +125,7 @@ class AsyncMelissa(CoreMelissa):
         if not self.devices:
             await self.async_fetch_devices()
         for device in self.devices:
-            if self.devices[device]['type'] == 'melissa':
+            if self.devices[device]['type'] in ('melissa', 'bobbie'):
                 input_data = json.dumps({'serial_number': device})
                 req = await self.session.post(
                     url, data=input_data, headers=headers)
