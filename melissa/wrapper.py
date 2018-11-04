@@ -31,7 +31,7 @@ class Melissa(CoreMelissa):
         self._time_cache = kwargs.get('time_cache', CHANGE_TIME_CACHE_DEFAULT)
         self.fetch_timestamp = None
         self._send_cache = None
-        if not self.have_connection():
+        if not self.have_connection:
             self._connect()
 
     def _connect(self):
@@ -125,7 +125,9 @@ class Melissa(CoreMelissa):
                 req = req.result()
                 if req.status_code == requests.codes.ok:
                     data = json.loads(req.text)
-                    if self.sanity_check(data['provider'], device):
+                    if self.devices[device]['type'] == 'bobbie':
+                        ret[device] = data['provider']
+                    elif self.sanity_check(data['provider'], device):
                         ret[device] = data['provider']
                     else:
                         ret[device] = self._latest_status[device]

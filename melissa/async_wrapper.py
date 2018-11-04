@@ -131,7 +131,9 @@ class AsyncMelissa(CoreMelissa):
                     url, data=input_data, headers=headers)
                 if req.status == requests.codes.ok:
                     data = json.loads(await req.text())
-                    if self.sanity_check(data['provider'], device):
+                    if self.devices[device]['type'] == 'bobbie':
+                        ret[device] = data['provider']
+                    elif self.sanity_check(data['provider'], device):
                         ret[device] = data['provider']
                     else:
                         ret[device] = self._latest_status[device]
