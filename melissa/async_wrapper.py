@@ -102,6 +102,8 @@ class AsyncMelissa(CoreMelissa):
         data.update({self.SERIAL_NUMBER: device})
         url = MELISSA_URL % 'provider/send'
         LOGGER.info(url)
+        if not self.have_connection:
+            await self.async_connect()
         headers = self._get_headers()
         headers.update({'Content-Type': 'application/json'})
         if self._send_cache == data:
@@ -110,7 +112,9 @@ class AsyncMelissa(CoreMelissa):
             self._send_cache = data
         input_data = json.dumps(data)
         LOGGER.info(input_data)
+        print(headers)
         req = await self.session.post(url, data=input_data, headers=headers)
+        print(await req.text())
         return req.status == requests.codes.ok
 
     async def async_status(self, test=False, cached=False):
