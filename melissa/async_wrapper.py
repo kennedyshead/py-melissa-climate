@@ -9,7 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import requests
-from melissa.exceptions import ApiException
+from melissa.exceptions import ApiException, UnsupportedDevice
 
 from melissa import CHANGE_TIME_CACHE_DEFAULT, HEADERS, MELISSA_URL, \
     CLIENT_DATA
@@ -38,7 +38,6 @@ class AsyncMelissa(CoreMelissa):
         self._latest_status = {}
         self._time_cache = kwargs.get('time_cache', CHANGE_TIME_CACHE_DEFAULT)
         self.fetch_timestamp = None
-        self._send_cache = None
 
     async def async_connect(self):
         url = MELISSA_URL % 'auth/login'
@@ -90,32 +89,33 @@ class AsyncMelissa(CoreMelissa):
         return self.geofences
 
     async def async_send(self, device, device_type='melissa', state_data=None):
-        if not self._send_cache:
-            if device_type == 'melissa':
-                data = self.DEFAULT_DATA_MELISSA.copy()
-            if device_type == 'bobbie':
-                data = self.DEFAULT_DATA_BOBBIE.copy()
+        if device_type == 'melissa':
+            data = self.DEFAULT_DATA_MELISSA.copy()
+        elif device_type == 'bobbie':
+            data = self.DEFAULT_DATA_BOBBIE.copy()
         else:
-            data = self._send_cache.copy()
+            raise UnsupportedDevice(device_type)
+
         if state_data:
             data.update(state_data)
+
         data.update({self.SERIAL_NUMBER: device})
         url = MELISSA_URL % 'provider/send'
         LOGGER.info(url)
+
         if not self.have_connection:
             await self.async_connect()
+
         headers = self._get_headers()
         headers.update({'Content-Type': 'application/json'})
-        if self._send_cache == data:
-            return True
-        else:
-            self._send_cache = data
+
         input_data = json.dumps(data)
-        LOGGER.info(input_data)
-        print(headers)
+        LOGGER.debug(input_data)
         req = await self.session.post(url, data=input_data, headers=headers)
-        print(await req.text())
-        return req.status == requests.codes.ok
+        if not req.status == requests.codes.ok:
+            raise ApiException("%s - %s", (req.status, req.text()))
+
+        return True
 
     async def async_status(self, test=False, cached=False):
         # TODO: Update self._send_cache
