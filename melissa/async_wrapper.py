@@ -27,7 +27,7 @@ class AsyncMelissa(CoreMelissa):
 
     def __init__(self, **kwargs):
         super(AsyncMelissa, self).__init__(**kwargs)
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(connector_owner=False)
         self.username = kwargs['username']
         self.password = kwargs['password']
         self.refresh_token = kwargs.get('refresh_token', None)
