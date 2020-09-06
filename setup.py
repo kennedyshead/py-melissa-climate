@@ -14,7 +14,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 __author__ = 'Magnus Knutas'
-VERSION = '2.1.3'
+VERSION = '2.1.4'
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
@@ -30,6 +30,7 @@ setup(
     'https://github.com/kennedyshead/py-melissa-climate/archive/%s.tar.gz' % VERSION,
     author=__author__,
     author_email='magnusknutas@gmail.com',
+    license='MIT license',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
