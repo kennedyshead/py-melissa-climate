@@ -57,6 +57,9 @@ class CoreMelissa:
     MODE_COOL = 3
     MODE_DRY = 4
 
+    LED_ON = "reset_color"
+    LED_OFF = "turn_led_off"
+
     DEFAULT_DATA_MELISSA = {
         SERIAL_NUMBER: "",
         COMMAND: "send_ir_code",
@@ -70,6 +73,11 @@ class CoreMelissa:
         SERIAL_NUMBER: "",
         COMMAND: "switch_on_off",
         STATE: 'on'
+    }
+
+    DEFAULT_DATA_LED = {
+      SERIAL_NUMBER: "",
+      COMMAND: LED_ON
     }
 
     def __init__(self, **kwargs):

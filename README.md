@@ -1,6 +1,6 @@
 # Python binds for Melissa Climate
 
-This is an unofficial wrapper for melissa web api: http://seemelissa.com/en
+This is an unofficial wrapper for melissa web api: https://docs.mclimate.eu
 
 [Coffee fundraiser](https://paypal.me/pools/c/8177s58qSX)
 

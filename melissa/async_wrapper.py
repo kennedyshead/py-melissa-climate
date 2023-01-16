@@ -93,6 +93,8 @@ class AsyncMelissa(CoreMelissa):
             data = self.DEFAULT_DATA_MELISSA.copy()
         elif device_type == 'bobbie':
             data = self.DEFAULT_DATA_BOBBIE.copy()
+        elif device_type == 'led':
+            data = self.DEFAULT_DATA_LED.copy()
         else:
             raise UnsupportedDevice(device_type)
 

@@ -87,6 +87,8 @@ class Melissa(CoreMelissa):
                 data = self.DEFAULT_DATA_MELISSA.copy()
             if device_type == 'bobbie':
                 data = self.DEFAULT_DATA_BOBBIE.copy()
+            if device_type == 'led':
+                data = self.DEFAULT_DATA_LED.copy()
         else:
             data = self._send_cache.copy()
         if state_data:
