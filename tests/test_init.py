@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json
-from unittest import TestCase
-
-import mock
+from unittest import TestCase, mock
 
 from melissa import ApiException
 from melissa.wrapper import MELISSA_URL, Melissa
