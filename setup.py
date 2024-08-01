@@ -44,6 +44,6 @@ setup(
     test_suite='tests',
     extras_require={
         'dev': ['check-manifest'],
-        'test': ['coverage', 'mock'],
+        'test': ['coverage'],
     },
 )
