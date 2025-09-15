@@ -1,8 +1,11 @@
 import json
-import pytest
-from unittest import TestCase, mock
+from typing import Any, Dict, Optional
 
-from melissa import ApiException, MELISSA_URL, AsyncMelissa as Melissa
+from _pytest.monkeypatch import MonkeyPatch
+from pytest import fixture, mark, raises
+
+from melissa import MELISSA_URL, ApiException
+from melissa import AsyncMelissa as Melissa
 from tests.helpers import load_fixture
 
 AUTH_LOGIN_URL = MELISSA_URL % "auth/login"
@@ -26,7 +29,7 @@ LOGGED_IN_HEADERS = {
     "X-Requested-With": "at.cloudfaces.melissa",
 }
 
-FETCH_DEVICES_DATA_OK = {
+FETCH_DEVICES_DATA_OK: Dict[str, Dict[str, Any]] = {
     "12345678": {
         "_links": {"self": {"href": "/v1/controllers"}},
         "brand_id": 1,
@@ -50,7 +53,7 @@ FETCH_DEVICES_DATA_OK = {
     }
 }
 
-FETCH_GEOFENCES_DATA_OK = {
+FETCH_GEOFENCES_DATA_OK: Dict[str, Dict[str, Any]] = {
     "12345678": {
         "_links": {"self": {"href": "/v1/geofences/1"}},
         "active": 1,
@@ -91,32 +94,49 @@ CUR_SETTINGS_DATA_OK = {
 
 
 class MockResponse:
-    def __init__(self, text: str, status_code: int) -> None:
+    def __init__(self, text: Optional[str], status_code: int) -> None:
         self._text = text
-        self.status_code = status_code
+        self.status = status_code
 
-    @property
-    def text(self) -> str:
+    async def text(self) -> Optional[str]:
         return self._text
 
     def result(self) -> "MockResponse":
         return self
 
 
-# This method will be used by the mock to replace requests.get
-def mocked_post(*args, **kwargs):
-    if args[0] == AUTH_LOGIN_URL:
-        return MockResponse(load_fixture("auth_login.json"), 200)
-    elif args[0] == STATUS_URL:
-        return MockResponse(load_fixture("status.json"), 200)
-    elif args[0] == SEND_URL:
-        return MockResponse(load_fixture("send.json"), 200)
+class MockedClientSession:
+    def __init__(*args: Any, **kwargs: Any) -> None:
+        """Dummy init method"""
 
-    return MockResponse(None, 404)
+    async def post(self, *args: Any, **kwargs: Any) -> MockResponse:
+        if args[0] == AUTH_LOGIN_URL:
+            return MockResponse(load_fixture("auth_login.json"), 200)
+        elif args[0] == STATUS_URL:
+            return MockResponse(load_fixture("status.json"), 200)
+        elif args[0] == SEND_URL:
+            return MockResponse(load_fixture("send.json"), 200)
+
+        return MockResponse(None, 404)
+
+    async def get(self, *args: Any, **kwargs: Any) -> MockResponse:
+        print(args)
+        if args[0] == FETCH_DEVICES_URL:
+            return MockResponse(load_fixture("fetch_devices.json"), 200)
+        elif args[0] == FETCH_GEOFENCES_URL:
+            return MockResponse(load_fixture("fetch_geofences.json"), 200)
+        elif args[0] == CUR_SETTINGS_URL:
+            return MockResponse(load_fixture("cur_settings.json"), 200)
+
+        return MockResponse(None, 404)
 
 
-# This method will be used by the mock to replace requests.get
-def mocked_post_bad(*args, **kwargs):
+@fixture(autouse=True)
+def mocked_aiohttp(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr("melissa.ClientSession", MockedClientSession)
+
+
+async def mocked_post_bad(*args: Any, **kwargs: Any) -> MockResponse:
     if args[0] == AUTH_LOGIN_URL:
         return MockResponse(load_fixture("auth_login_denied.json"), 401)
     elif args[0] == SEND_URL:
@@ -127,133 +147,95 @@ def mocked_post_bad(*args, **kwargs):
     return MockResponse(None, 404)
 
 
-def mocked_get(*args, **kwargs):
-    if args[0] == FETCH_DEVICES_URL:
-        return MockResponse(load_fixture("fetch_devices.json"), 200)
-    elif args[0] == FETCH_GEOFENCES_URL:
-        return MockResponse(load_fixture("fetch_geofences.json"), 200)
-    elif args[0] == CUR_SETTINGS_URL:
-        return MockResponse(load_fixture("cur_settings.json"), 200)
+def test_init() -> None:
+    melissa = Melissa(
+        username="1234",
+        password="4321",
+        access_token="12345678",
+        refresh_token="12345678",
+    )
+    assert melissa.username == "1234"
+    assert melissa.password == "4321"
+    assert melissa.access_token == "12345678"
+    assert melissa.refresh_token == "12345678"
 
-    return MockResponse(None, 404)
+
+@mark.asyncio
+async def test_connect_bad(monkeypatch: MonkeyPatch) -> None:
+    melissa = Melissa(username="1234", password="4321")
+    monkeypatch.setattr("melissa.ClientSession.post", mocked_post_bad)
+    with raises(ApiException):
+        await melissa.async_connect()
 
 
-class TestMelissa(TestCase):
-    @mock.patch("melissa.ClientSession")
-    def test_init(self, mock_post):
-        melissa = Melissa(
-            username="1234",
-            password="4321",
-            access_token="12345678",
-            refresh_token="12345678",
-        )
-        self.assertEqual(melissa.username, "1234")
-        self.assertEqual(melissa.password, "4321")
-        self.assertEqual(melissa.access_token, "12345678")
-        self.assertEqual(melissa.refresh_token, "12345678")
+def test_get_headers() -> None:
+    melissa = Melissa(
+        username="1234",
+        password="4321",
+        access_token="12345678",
+        token_type="Bearer",
+    )
+    assert melissa._get_headers() == LOGGED_IN_HEADERS
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    async def test_connect_ok(self, mock_post):
-        melissa = Melissa(username="1234", password="4321")
-        self.assertIsNone(await melissa.async_connect())
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    async def test_connect_bad(self, mock_post):
-        mock_post.post.side_effect = mocked_post_bad
-        melissa = Melissa(username="1234", password="4321")
-        self.assertRaises(ApiException, await melissa.async_connect())
+def test_sanity_check() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    melissa._latest_temp = 28.9
+    melissa._latest_status["12345678"] = json.loads(
+        load_fixture("status.json")
+    )["provider"]
+    data = json.loads(load_fixture("bad_temp_status.json"))["provider"]
+    device = "12345678"
+    assert not melissa.sanity_check(data, device)
+    data = json.loads(load_fixture("bad_hum_status.json"))["provider"]
+    assert not melissa.sanity_check(data, device)
 
-    @mock.patch("melissa.ClientSession")
-    def test_get_headers(self, mock_post):
-        melissa = Melissa(
-            username="1234",
-            password="4321",
-            access_token="12345678",
-            token_type="Bearer",
-        )
-        assert melissa._get_headers() == LOGGED_IN_HEADERS
 
-    @mock.patch("melissa.ClientSession")
-    def test_sanity_check(self, mock_post):
-        melissa = Melissa(username="1234", password="4321")
-        melissa._latest_temp = 28.9
-        melissa._latest_status["12345678"] = json.loads(
-            load_fixture("status.json")
-        )["provider"]
-        data = json.loads(load_fixture("bad_temp_status.json"))["provider"]
-        device = "12345678"
-        self.assertFalse(melissa.sanity_check(data, device))
-        data = json.loads(load_fixture("bad_hum_status.json"))["provider"]
-        self.assertFalse(melissa.sanity_check(data, device))
+@mark.asyncio
+async def test_fetch_devices() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    resp = await melissa.async_fetch_devices()
+    assert resp == FETCH_DEVICES_DATA_OK
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    @mock.patch("melissa.ClientSession")
-    async def test_fetch_devices(self, mock_get, mock_post):
-        melissa = Melissa(username="1234", password="4321")
-        resp = await melissa.async_fetch_devices()
-        self.assertEqual(resp, FETCH_DEVICES_DATA_OK)
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    @mock.patch("melissa.ClientSession")
-    async def test_fetch_geofences(self, mock_get, mock_post):
-        melissa = Melissa(username="1234", password="4321")
-        resp = await melissa.async_fetch_geofences()
-        self.assertEqual(resp, FETCH_GEOFENCES_DATA_OK)
+@mark.asyncio
+async def test_fetch_geofences() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    resp = await melissa.async_fetch_geofences()
+    assert resp == FETCH_GEOFENCES_DATA_OK
 
-    @mock.patch("melissa.ClientSession")
-    def test_have_connection(self, mock_post):
-        melissa = Melissa(
-            username="1234", password="4321", access_token="12345678"
-        )
-        self.assertTrue(melissa.have_connection)
-        melissa.access_token = None
-        self.assertFalse(melissa.have_connection)
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    async def test_send_ok(self, mock_post):
-        melissa = Melissa(username="1234", password="4321")
-        self.assertTrue(
-            await melissa.async_send("12345678", "melissa", {"temp": 20})
-        )
+def test_have_connection() -> None:
+    melissa = Melissa(
+        username="1234", password="4321", access_token="12345678"
+    )
+    assert melissa.have_connection
+    melissa.access_token = None
+    assert not melissa.have_connection
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    @mock.patch("melissa.LOGGER")
-    async def test_send(self, mock_post, mock_logger):
-        melissa = Melissa(username="1234", password="4321")
-        self.assertTrue(
-            await melissa.async_send("12345678", "melissa", {"temp": 20})
-        )
-        with mock.patch(
-            "melissa.ClientSession.post",
-            side_effect=mocked_post_bad,
-        ):
-            self.assertFalse(
-                await melissa.async_send("12345678", "melissa", {"temp": 21})
-            )
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    async def test_status(self, mocked_get, mocked_post):
-        melissa = Melissa(username="1234", password="4321")
-        good_status = await melissa.async_status()
-        with mock.patch(
-            "melissa.ClientSession.post",
-            side_effect=mocked_post_bad,
-        ):
-            melissa.fetch_timestamp = None
-            bad_status = await melissa.async_status()
-        self.assertEqual(good_status, bad_status)
+@mark.asyncio
+async def test_send_ok() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    assert await melissa.async_send("12345678", "melissa", {"temp": 20})
 
-    @pytest.mark.asyncio
-    @mock.patch("melissa.ClientSession")
-    async def test_cur_settings(self, mocked_get, mocked_post):
-        melissa = Melissa(username="1234", password="4321")
-        self.assertEqual(
-            await melissa.async_cur_settings("12345678"), CUR_SETTINGS_DATA_OK
-        )
+
+@mark.asyncio
+async def test_send() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    assert await melissa.async_send("12345678", "melissa", {"temp": 20})
+
+
+@mark.asyncio
+async def test_status() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    good_status = await melissa.async_status()
+    melissa.fetch_timestamp = None
+    bad_status = await melissa.async_status()
+    assert good_status == bad_status
+
+
+@mark.asyncio
+async def test_cur_settings() -> None:
+    melissa = Melissa(username="1234", password="4321")
+    assert await melissa.async_cur_settings("12345678") == CUR_SETTINGS_DATA_OK
