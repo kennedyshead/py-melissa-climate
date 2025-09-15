@@ -168,4 +168,12 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Neovim
 .nvim.lua
+
+# ruff
+.ruff_cache
+
+#pytest
+.pytest_cache
