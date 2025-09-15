@@ -1,0 +1,88 @@
+[project]
+name = "py-melissa-climate"
+description = "Api wrapper for Melissa Climate http://seemelissa.com"
+readme = "README.md"
+requires-python = ">= 3.12"
+license = "MIT"
+license-files = ["LICEN[CS]E.*"]
+authors = [
+  { name = "Magnus Knutas", email = "magnusknutas@gmail.com" },
+]
+maintainers = [
+  { name = "Magnus Knutas", email = "magnusknutas@gmail.com" },
+]
+keywords = [
+  "Melissa Climate",
+  "bobby",
+  "development",
+  "hass",
+  "homeassistant",
+  "iot",
+  "mClimate",
+  "melissa",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+  "aiohttp",
+]
+dynamic = ["version"]
+
+[project.urls]
+"Bug Tracker" = "https://github.com/kennedyshead/py-melissa-climate/issues"
+Changelog = "https://github.com/kennedyshead/py-melissa-climate/blob/master/CHANGELOG.md"
+Documentation = "https://github.com/kennedyshead/py-melissa-climate/blob/master/README.md"
+Homepage = "https://github.com/kennedyshead/py-melissa-climate"
+Repository = "https://github.com/kennedyshead/py-melissa-climate.git"
+
+[project.optional-dependencies]
+dev = []
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+explicit_package_bases = true
+strict = true
+follow_imports = "silent"
+exclude = ["^setup.py$", "build/**/*.py", "tests/**/*.py"]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/melissa"
+
+[[tool.mypy.overrides]]
+module = ["requests"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+pythonpath = ["melissa"]
+
+[tool.rope]
+split_imports = false
+ignored_resources = [
+  "**/*.pyc",
+  "*~",
+  ".git",
+  ".tox",
+  ".venv",
+  "venv",
+  "build",
+  "dist",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".coverage",
+  ".DS_Store",
+  ".gitignore",
+  "*.yaml",
+]
+
+[tool.ruff]
+line-length = 79

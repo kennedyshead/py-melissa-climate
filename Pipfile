@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aiohttp = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-cov = "*"
+mypy = "*"
+rope = "*"
+ruff = "*"
+pre-commit = "*"
+mccabe = "*"
+isort = "*"
+pytest-asyncio = "*"
+
+[requires]
+python_version = "2.7"

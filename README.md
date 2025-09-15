@@ -39,7 +39,7 @@ flake8 melissa
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kennedyshead/py-melissa-climate/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/kennedyshead/py-melissa-climate/tags).
 
 ## Authors
 
@@ -53,4 +53,3 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * Melissa dev team who made a great API
 * Home-assistant.io for the inspiration to write this
-
