@@ -26,6 +26,6 @@ jobs:
         with:
           command: pre-commit run --all-files
       - name: Test with pytest
-        uses: VaultVulp/action-pipenv@v2.0.1
+        uses: kennedyshead/github-action-pipenv@v1
         with:
           command: run pytest --cov
