@@ -1,38 +1,27 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-__author__ = 'Magnus Knutas'
+"""Exxceptions for py-melissa-climate"""
+
+from typing import Optional
 
 
-class ApiException(Exception):
-
-    def __init__(self, *args):
-        self._message = args[0]
-        try:
-            self._status_code = args[1]
-        except IndexError:
-            self._status_code = None
+class _Exception(Exception):
+    def __init__(
+        self, _message: str, _status_code: Optional[int] = None
+    ) -> None:
+        self._message = _message
+        self._status_code = _status_code
 
     @property
-    def message(self):
+    def message(self) -> Optional[str]:
         return self._message
 
     @property
-    def status_code(self):
+    def status_code(self) -> Optional[int]:
         return self._status_code
 
 
-class UnsupportedDevice(Exception):
-    def __init__(self, *args):
-        self._message = args[0]
-        try:
-            self._status_code = args[1]
-        except IndexError:
-            self._status_code = None
+class ApiException(_Exception):
+    """Api error occured"""
 
-    @property
-    def message(self):
-        return self._message
 
-    @property
-    def status_code(self):
-        return self._status_code
+class UnsupportedDevice(_Exception):
+    """Unsupported device"""
