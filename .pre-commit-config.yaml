@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-added-large-files
       - id: check-case-conflict
@@ -19,7 +19,7 @@ repos:
         exclude: Pipfile.lock
         args: ["--autofix"]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.14.0"
+    rev: "v1.18.1"
     hooks:
       - id: mypy
         additional_dependencies:
@@ -27,7 +27,7 @@ repos:
         exclude: tests
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
-    rev: v0.8.4
+    rev: v0.13.0
     hooks:
       # Run the linter.
       - id: ruff
