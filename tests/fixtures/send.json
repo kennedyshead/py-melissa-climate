@@ -1,13 +1,13 @@
 {
+  "_links": {
+    "self": {
+      "href": "/v1/provider/send"
+    }
+  },
   "provider": [
     0,
     0,
     0,
     0
-  ],
-  "_links": {
-    "self": {
-      "href": "\/v1\/provider\/send"
-    }
-  }
+  ]
 }

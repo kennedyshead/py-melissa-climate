@@ -2,42 +2,42 @@
   "_embedded": {
     "controller": [
       {
-        "user_id": 1,
-        "serial_number": "12345678",
-        "mac": "12345678",
-        "firmware_version": "V1SHTHF",
-        "name": "Melissa 12345678",
-        "type": "melissa",
-        "room_id": null,
-        "created": "2016-07-06 18:59:46",
-        "id": 1,
-        "online": true,
-        "brand_id": 1,
-        "controller_log": {
-          "temp": 28.6,
-          "created": "2018-01-16T18:02:36.735Z",
-          "raw_temperature": 29384,
-          "humidity": 15.3,
-          "raw_humidity": 11142
-        },
         "_links": {
           "self": {
-            "href": "\/v1\/controllers"
+            "href": "/v1/controllers"
           }
-        }
+        },
+        "brand_id": 1,
+        "controller_log": {
+          "created": "2018-01-16T18:02:36.735Z",
+          "humidity": 15.3,
+          "raw_humidity": 11142,
+          "raw_temperature": 29384,
+          "temp": 28.6
+        },
+        "created": "2016-07-06 18:59:46",
+        "firmware_version": "V1SHTHF",
+        "id": 1,
+        "mac": "12345678",
+        "name": "Melissa 12345678",
+        "online": true,
+        "room_id": null,
+        "serial_number": "12345678",
+        "type": "melissa",
+        "user_id": 1
       }
     ]
   },
-  "total": 1,
   "_links": {
-    "self": {
-      "href": "\/v1\/controllers"
-    },
     "first": {
-      "href": "\/v1\/controllers?page=1"
+      "href": "/v1/controllers?page=1"
     },
     "last": {
-      "href": "\/v1\/controllers?page=1"
+      "href": "/v1/controllers?page=1"
+    },
+    "self": {
+      "href": "/v1/controllers"
     }
-  }
+  },
+  "total": 1
 }
