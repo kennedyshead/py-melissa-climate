@@ -14,18 +14,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2 # Checking out the repo
-
-      - name: Install dependencies
-        uses: kennedyshead/github-action-pipenv@v1
-        with:
-          command: install -d # Install all dependencies, including development ones
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python
+      - name: Lint
+        run: |
+          pip install pipenv
+          pipenv install --dev
+          python -m pre-commit run --all-files
 
       - name: Test
-        uses: kennedyshead/github-action-pipenv@v1
-        with:
-          command: pre-commit run --all-files
-      - name: Test with pytest
-        uses: kennedyshead/github-action-pipenv@v1
-        with:
-          command: run pytest --cov
+        run: |
+          python -m pytest --cov
