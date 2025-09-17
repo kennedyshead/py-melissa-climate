@@ -1,12 +1,13 @@
-"""Python implementation of the mclimate api"""
+"""Python implementation of the mclimate api."""
 
 __version__ = "3.0.0"
 
+
 import json
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from numbers import Number
-from typing import Dict, Optional, Union, Any
+from typing import Any, Dict, Optional, Union
 
 from aiohttp import ClientSession
 from const import (
@@ -27,9 +28,7 @@ __all__ = ("ApiException", "AsyncMelissa", "MELISSA_URL")
 
 
 class AsyncMelissa:
-    """
-    Async class for Melissa.
-    """
+    """Async class for Melissa."""
 
     SERIAL_NUMBER: str = "serial_number"
     COMMAND: str = "command"
@@ -84,6 +83,7 @@ class AsyncMelissa:
         token_type: Optional[str] = None,
         refresh_token: Optional[str] = None,
     ) -> None:
+        """Init method."""
         self.default_headers: Dict[str, str] = headers
         self.access_token: Optional[str] = access_token
         self.token_type: Optional[str] = token_type
@@ -92,8 +92,8 @@ class AsyncMelissa:
         self.username: str = username
         self.password: str = password
         self.refresh_token: Optional[str] = refresh_token
-        self.devices: Dict[str, Any] = {}
-        self.geofences: Dict[str, str] = {}
+        self.devices: Dict[str, Dict[str, Any]] = {}
+        self.geofences: Dict[str, Dict[str, Any]] = {}
         self._latest_humidity: Optional[float] = None
         self._latest_temp: Optional[float] = None
         self._time_cache: int = time_cache
@@ -108,6 +108,7 @@ class AsyncMelissa:
         return headers
 
     def sanity_check(self, data: Dict[str, Any], device: str) -> bool:
+        """Sanity check method."""
         ret = True
         _latest: Optional[Dict[str, Union[str, Number, None]]] = (
             self._latest_status.get(device)
@@ -127,9 +128,11 @@ class AsyncMelissa:
 
     @property
     def have_connection(self) -> bool:
+        """Have connection method."""
         return self.access_token is not None
 
     async def async_connect(self) -> None:
+        """Async connect method."""
         url = MELISSA_URL % "auth/login"
         _LOGGER.info(url)
         data = CLIENT_DATA.copy()
@@ -145,11 +148,13 @@ class AsyncMelissa:
             raise ApiException(await req.text(), req.status)
 
     async def async_fetch(self, url: str) -> str:
+        """Async fetch method."""
         response = await self.session.get(url)
         ret: str = await response.text()
         return ret
 
-    async def async_fetch_devices(self) -> dict[str, str]:
+    async def async_fetch_devices(self) -> Dict[str, Dict[str, Any]]:
+        """Async fetch devices method."""
         url = MELISSA_URL % "controllers"
         _LOGGER.info(url)
         headers = self._get_headers()
@@ -161,7 +166,8 @@ class AsyncMelissa:
         _LOGGER.debug(self.devices)
         return self.devices
 
-    async def async_fetch_geofences(self) -> Dict[str, str]:
+    async def async_fetch_geofences(self) -> Dict[str, Dict[str, Any]]:
+        """Async fetch geofences method."""
         url = MELISSA_URL % "geofences"
         _LOGGER.info(url)
         headers = self._get_headers()
@@ -179,6 +185,7 @@ class AsyncMelissa:
         device_type: str = "melissa",
         state_data: Optional[Dict[str, Any]] = None,
     ) -> bool:
+        """Async send method."""
         data: Dict[str, Any]
         if device_type == "melissa":
             data = self.DEFAULT_DATA_MELISSA.copy()
@@ -213,7 +220,7 @@ class AsyncMelissa:
     async def async_status(
         self, test: bool = False, cached: bool = False
     ) -> Dict[str, Any]:
-        # TODO: Update self._send_cache
+        """Async status method."""
         if (
             cached
             and self.fetch_timestamp
@@ -247,11 +254,12 @@ class AsyncMelissa:
                     return await self.async_status()
                 else:
                     raise ApiException(await req.text())
-        self.fetch_timestamp = datetime.utcnow()
+        self.fetch_timestamp = datetime.now(UTC)
         self._latest_status = ret
         return ret
 
     async def async_cur_settings(self, serial_number: str) -> Dict[str, Any]:
+        """Async cur settings method."""
         url = MELISSA_URL % "controllers/%s" % serial_number
         _LOGGER.info(url)
         headers = self._get_headers()
@@ -259,6 +267,6 @@ class AsyncMelissa:
         if req.status == 200:
             data: Dict[str, Any] = json.loads(await req.text())
         else:
-            raise ApiException(await req.text())
+            raise ApiException(await req.text(), req.status)
         _LOGGER.debug(data)
         return data

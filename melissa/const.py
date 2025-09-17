@@ -1,6 +1,4 @@
-"""
-Constants for Melissa platform.
-"""
+"""Constants for Melissa platform."""
 
 from typing import Dict
 

@@ -46,6 +46,12 @@ dev = []
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
 
+[tool.bandit]
+exclude_dirs = ["tests"]
+
+[tool.flake8]
+max_line_length = 79
+
 [tool.mypy]
 python_version = "3.13"
 warn_return_any = true
@@ -55,7 +61,7 @@ warn_unused_ignores = true
 explicit_package_bases = true
 strict = true
 follow_imports = "silent"
-exclude = ["^setup.py$", "build/**/*.py", "tests/**/*.py"]
+exclude = ["^setup.py$", "build", "tests"]
 mypy_path = "$MYPY_CONFIG_FILE_DIR/melissa"
 
 [[tool.mypy.overrides]]
@@ -63,7 +69,7 @@ module = ["requests"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
-pythonpath = ["melissa"]
+pythonpath = ["melissa", "."]
 
 [tool.rope]
 split_imports = false
@@ -86,3 +92,8 @@ ignored_resources = [
 
 [tool.ruff]
 line-length = 79
+
+[tool.yapf.style]
+based_on_style = "pep8"
+column_limit = 79
+indent_width = 4

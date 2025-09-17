@@ -1,4 +1,4 @@
-"""Exxceptions for py-melissa-climate"""
+"""Exceptions for py-melissa-climate."""
 
 from typing import Optional
 
@@ -20,8 +20,8 @@ class _Exception(Exception):
 
 
 class ApiException(_Exception):
-    """Api error occured"""
+    """Api error occured."""
 
 
 class UnsupportedDevice(_Exception):
-    """Unsupported device"""
+    """Unsupported device."""
