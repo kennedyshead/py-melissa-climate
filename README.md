@@ -1,6 +1,8 @@
 # Python binds for Melissa Climate
 
-This is an unofficial wrapper for melissa web api: https://docs.mclimate.eu ![Python package](https://github.com/kennedyshead/py-melissa-climate/workflows/Python%20package/badge.svg)
+![Python package](https://github.com/kennedyshead/py-melissa-climate/workflows/Python%20package/badge.svg)
+
+This is an unofficial wrapper for melissa web api: https://docs.mclimate.eu
 
 [Coffee fundraiser](https://paypal.me/pools/c/8177s58qSX)
 

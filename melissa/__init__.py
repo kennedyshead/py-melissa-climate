@@ -1,11 +1,9 @@
 """Python implementation of the mclimate api."""
 
-__version__ = "3.0.0"
-
-
 import json
 import logging
 from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version
 from numbers import Number
 from typing import Any, Dict, Optional, Union
 
@@ -19,6 +17,11 @@ from const import (
     MIN_HUMIDITY_ALLOWED,
 )
 from exceptions import ApiException, UnsupportedDevice
+
+try:
+    __version__ = version("melissa")
+except PackageNotFoundError:
+    __version__ = "dev"
 
 __author__ = "Magnus Knutas"
 
