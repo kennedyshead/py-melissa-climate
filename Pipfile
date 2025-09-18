@@ -11,9 +11,9 @@ pytest = "*"
 pytest-cov = "*"
 mypy = "*"
 rope = "*"
-pre-commit = "*"
 pytest-asyncio = "*"
 yapf = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.12"
