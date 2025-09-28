@@ -8,7 +8,8 @@ from numbers import Number
 from typing import Any, Dict, Optional, Union
 
 from aiohttp import ClientSession
-from const import (
+
+from .const import (
     CHANGE_THRESHOLD,
     CHANGE_TIME_CACHE_DEFAULT,
     CLIENT_DATA,
@@ -16,7 +17,7 @@ from const import (
     MELISSA_URL,
     MIN_HUMIDITY_ALLOWED,
 )
-from exceptions import ApiException, UnsupportedDevice
+from .exceptions import ApiException, UnsupportedDevice
 
 try:
     __version__ = version("melissa")
