@@ -118,6 +118,7 @@ class AsyncMelissa:
             self._latest_status.get(device)
         )
         if _latest is not None:
+            _LOGGER.debug(data)
             left = data[self.TEMP]
             right = _latest[self.TEMP]
             if abs(left - right) > CHANGE_THRESHOLD:
@@ -247,12 +248,7 @@ class AsyncMelissa:
                 )
                 if req.status == 200:
                     data = json.loads(await req.text())
-                    if self.devices[device]["type"] == "bobbie":
-                        ret[device] = data["provider"]
-                    elif self.sanity_check(data["provider"], device):
-                        ret[device] = data["provider"]
-                    else:
-                        ret[device] = self._latest_status[device]
+                    ret[device] = data["provider"]
                 elif req.status == 401 and not test:
                     await self.async_connect()
                     return await self.async_status()
