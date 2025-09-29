@@ -1,6 +1,6 @@
 [project]
 name = "py-melissa-climate"
-version = "3.0.0"
+version = "3.0.1"
 description = "Api wrapper for Melissa Climate http://seemelissa.com"
 readme = "README.md"
 requires-python = ">= 3.12"
