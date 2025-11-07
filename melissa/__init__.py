@@ -230,7 +230,7 @@ class AsyncMelissa:
             cached
             and self.fetch_timestamp
             and self._time_cache
-            > (datetime.utcnow() - self.fetch_timestamp).total_seconds()
+            > (datetime.now(UTC) - self.fetch_timestamp).total_seconds()
         ):
             return self._latest_status
         url = MELISSA_URL % "provider/fetch"
