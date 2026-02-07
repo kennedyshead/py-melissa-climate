@@ -32,7 +32,10 @@ jobs:
           python -m pip install build wheel setuptools setuptools_scm
           python -m build
           python -m build --wheel --no-isolation
+<<<<<<< HEAD
 
+=======
+>>>>>>> d22f020 (Bump deps)
 
       - name: Upload distributions
         uses: actions/upload-artifact@v4
